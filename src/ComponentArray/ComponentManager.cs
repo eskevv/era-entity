@@ -1,6 +1,7 @@
+using System.ComponentModel;
 using System.Diagnostics;
 
-namespace OrionLibrary;
+namespace EraEntity.ComponentArray;
 
 public class ComponentManager
 {
@@ -20,60 +21,60 @@ public class ComponentManager
 
     private ComponentArray<T> GetComponentArray<T>()
     {
-        string type_name = typeof(T).Name;
-        Debug.Assert(_componentTypes.ContainsKey(type_name), $"Component |{type_name}| not registered before use.");
-        return (ComponentArray<T>)_components[type_name];
+        string typeName = typeof(T).Name;
+        Debug.Assert(_componentTypes.ContainsKey(typeName), $"Component |{typeName}| not registered before use.");
+        return (ComponentArray<T>)_components[typeName];
     }
 
     public void RegisterComponent<T>()
     {
-        string type_name = typeof(T).Name;
-        Debug.Assert(!_componentTypes.ContainsKey(type_name), $"Registering component type |{type_name}| more than once.");
-        System.Console.WriteLine($"Components[{type_name}] - Registered Successfully.");
-        _componentTypes[type_name] = _nextComponentType++;
-        _components[type_name] = new ComponentArray<T>();
+        string typeName = typeof(T).Name;
+        Debug.Assert(!_componentTypes.ContainsKey(typeName), $"Registering component type |{typeName}| more than once.");
+        System.Console.WriteLine($"Components[{typeName}] - Registered Successfully.");
+        _componentTypes[typeName] = _nextComponentType++;
+        _components[typeName] = new ComponentArray<T>();
     }
 
     public ushort GetComponentType(Type type)
     {
-        string type_name = type.Name;
-        Debug.Assert(_componentTypes.ContainsKey(type_name), $"Component |{type_name}| not registered before use.");
-        return _componentTypes[type_name];
+        string typeName = type.Name;
+        Debug.Assert(_componentTypes.ContainsKey(typeName), $"Component |{typeName}| not registered before use.");
+        return _componentTypes[typeName];
     }
 
-    public void AddComponent<T>(Entity entity, T component) where T : Component
+    public void AddComponent<T>(int entity, T component) where T : Component
     {
-        ComponentArray<T> component_array = GetComponentArray<T>();
-        component_array.InsertData(entity, component);
+        var componentArray = GetComponentArray<T>();
+        componentArray.InsertData(entity, component);
         component.Entity = entity;
     }
 
-    public void RemoveComponent<T>(Entity entity)
+    public void RemoveComponent<T>(int entity)
     {
-        ComponentArray<T> component_array = GetComponentArray<T>();
-        component_array.RemoveData(entity);
+        var componentArray = GetComponentArray<T>();
+        componentArray.RemoveData(entity);
     }
 
-    public T GetComponent<T>(Entity entity)
+    public T GetComponent<T>(int entity)
     {
-        ComponentArray<T> component_array = GetComponentArray<T>();
-        return component_array.GetData(entity);
+        var componentArray = GetComponentArray<T>();
+        return componentArray.GetData(entity);
     }
 
-    public bool HasComponentType<T>(Entity entity)
+    public bool HasComponentType<T>(int entity)
     {
-        string type_name = typeof(T).Name;
-        if (!_componentTypes.ContainsKey(type_name))
+        string typeName = typeof(T).Name;
+        if (!_componentTypes.ContainsKey(typeName))
             return false;
 
-        ComponentArray<T> component_array = GetComponentArray<T>();
-        if (!component_array.IncludesEntity(entity))
+        var componentArray = GetComponentArray<T>();
+        if (!componentArray.IncludesEntity(entity))
             return false;
 
         return true;
     }
 
-    public void DestroyEntityComponents(Entity entity)
+    public void DestroyEntityComponents(int entity)
     {
         foreach (var item in _components)
         {

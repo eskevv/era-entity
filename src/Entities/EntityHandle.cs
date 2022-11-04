@@ -1,14 +1,16 @@
-namespace OrionLibrary;
+using System.ComponentModel;
+
+namespace EraEntity.Entities;
 
 public class EntityHandle
 {
-    public Entity ID { get; private set; }
+    public int ID { get; private set; }
     private EntityScene _registry;
 
-    public EntityHandle(Entity id)
+    public EntityHandle(int id, EntityScene scene)
     {
         ID = id;
-        _registry = Orion.Scene;
+        _registry = scene;
     }
 
     public void AddComponent<T>(T component) where T : Component =>

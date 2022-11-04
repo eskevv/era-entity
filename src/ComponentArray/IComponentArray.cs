@@ -1,6 +1,6 @@
-namespace OrionLibrary;
+namespace EraEntity.ComponentArray;
 
 public interface IComponentArray
 {
-    public bool DestroyIndexedData(Entity entity);
+    public bool DestroyIndexedData(int entity);
 }

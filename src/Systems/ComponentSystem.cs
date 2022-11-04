@@ -1,15 +1,15 @@
-namespace OrionLibrary;
+namespace EraEntity.Systems;
 
 public class ComponentSystem {
 
-   public HashSet<Entity> Entities { get; set; }
+   public HashSet<int> Entities { get; set; }
+   public EntityScene Scene { get; private set;  }
    public bool WasUpdated { get; set; }
 
-   protected EntityScene Coordinator => Orion.Scene;
-
-   public ComponentSystem()
+   public ComponentSystem(EntityScene scene)
    {
-      Entities = new HashSet<Entity>();
+      Entities = new HashSet<int>();
+      Scene = scene;
    }
 
    protected void RecentUpdates()

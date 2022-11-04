@@ -1,4 +1,7 @@
-namespace OrionLibrary;
+using EraEntity.ComponentArray;
+using EraEntity.Entities;
+
+namespace EraEntity.Systems;
 
 public class SystemSignature
 {

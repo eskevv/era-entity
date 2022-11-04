@@ -1,4 +1,9 @@
-namespace OrionLibrary;
+using System.ComponentModel;
+using EraEntity.ComponentArray;
+using EraEntity.Entities;
+using EraEntity.Systems;
+
+namespace EraEntity;
 
 public class EntityScene
 {
@@ -21,9 +26,9 @@ public class EntityScene
 
     public void Update()
     {
-        for (int x = 0; x < _destroyCounter; x++)
+        for (var x = 0; x < _destroyCounter; x++)
         {
-            Entity entity = _entitiesToKill[x];
+            int entity = _entitiesToKill[x];
             _entityManager.DestroyEntity(entity);
             _componentManager.DestroyEntityComponents(entity);
             _systemManager.WipeEntityFromSystems(entity);
@@ -32,9 +37,9 @@ public class EntityScene
         _destroyCounter = 0;
     }
 
-    public void DestroyEntity(Entity entity)
+    public void DestroyEntity(int entity)
     {
-        for (int x = 0; x < _destroyCounter; x++)
+        for (var x = 0; x < _destroyCounter; x++)
         {
             if (_entitiesToKill[x] == entity)
                 return;
@@ -43,33 +48,33 @@ public class EntityScene
         _entitiesToKill[_destroyCounter++] = entity;
     }
 
-    public void AddComponent<T>(Entity entity, T component) where T : Component
+    public void AddComponent<T>(int entity, T component) where T : Component
     {
         _componentManager.AddComponent<T>(entity, component);
-        BitArray signature = _entityManager.GetSignature(entity);
-        ushort component_type = _componentManager.GetComponentType(typeof(T));
+        var signature = _entityManager.GetSignature(entity);
+        ushort componentType = _componentManager.GetComponentType(typeof(T));
 
-        signature.SetBits(component_type);
+        signature.SetBits(componentType);
         _entityManager.SetSignature(entity, signature);
         _systemManager.UpdateEntityReferences(entity, signature);
 
     }
 
-    public void RemoveComponent<T>(Entity entity)
+    public void RemoveComponent<T>(int entity)
     {
         _componentManager.RemoveComponent<T>(entity);
-        BitArray signature = _entityManager.GetSignature(entity);
-        ushort component_type = _componentManager.GetComponentType(typeof(T));
+        var signature = _entityManager.GetSignature(entity);
+        ushort componentType = _componentManager.GetComponentType(typeof(T));
 
-        signature.ClearBits(component_type);
+        signature.ClearBits(componentType);
         _entityManager.SetSignature(entity, signature);
         _systemManager.UpdateEntityReferences(entity, signature);
     }
 
     public EntityHandle CreateEntity(string? tag = null)
     {
-        Entity entity = _entityManager.CreateEntity(tag);
-        return new EntityHandle(entity);
+        int entity = _entityManager.CreateEntity(tag);
+        return new EntityHandle(entity, this);
     }
 
     #region Scene Interface
@@ -78,22 +83,22 @@ public class EntityScene
 
     public void RegisterComponent<T>() => _componentManager.RegisterComponent<T>();
 
-    public void AssignTag(Entity entity, string tag) => _entityManager.AssignTag(entity, tag);
+    public void AssignTag(int entity, string tag) => _entityManager.AssignTag(entity, tag);
 
     public void AddSystemSignature<T>(SystemSignature signature) => _systemManager.SetSignature<T>(signature);
 
-    public bool HasComponent<T>(Entity entity) => _componentManager.HasComponentType<T>(entity);
+    public bool HasComponent<T>(int entity) => _componentManager.HasComponentType<T>(entity);
 
     public ushort GetComponentType(Type type) => _componentManager.GetComponentType(type);
 
-    public T GetComponent<T>(Entity entity) => _componentManager.GetComponent<T>(entity);
+    public T GetComponent<T>(int entity) => _componentManager.GetComponent<T>(entity);
 
-    public string? GetTag(Entity entity) => _entityManager.GetTag(entity);
+    public string? GetTag(int entity) => _entityManager.GetTag(entity);
 
     public EntityHandle FindEntityByTag(string tag)
     {
-        Entity entity = _entityManager.FindByTag(tag);
-        return new EntityHandle(entity);
+        int entity = _entityManager.FindByTag(tag);
+        return new EntityHandle(entity, this);
     }
 
     #endregion

@@ -1,6 +1,7 @@
 using System.Diagnostics;
+using EraEntity.Entities;
 
-namespace OrionLibrary;
+namespace EraEntity.Systems;
 
 public class SystemManager
 {
@@ -35,7 +36,7 @@ public class SystemManager
         _signatures[type_name].Add(signature);
     }
 
-    public void WipeEntityFromSystems(Entity entity)
+    public void WipeEntityFromSystems(int entity)
     {
         foreach (var item in _systems)
         {
@@ -44,15 +45,15 @@ public class SystemManager
         }
     }
 
-    public void UpdateEntityReferences(Entity entity, BitArray entitySignature)
+    public void UpdateEntityReferences(int entity, BitArray entitySignature)
     {
         foreach (var item in _systems)
         {
             string type_name = item.Key;
-            ComponentSystem system = item.Value;
-            List<SystemSignature> system_signatures = _signatures[type_name];
+            var system = item.Value;
+            var system_signatures = _signatures[type_name];
 
-            for (int x = 0; x < system_signatures.Count; x++)
+            for (var x = 0; x < system_signatures.Count; x++)
             {
                 var signature = system_signatures[x];
 
@@ -69,7 +70,7 @@ public class SystemManager
         }
     }
 
-    private void AddEntityToSystem(ComponentSystem system, Entity entity, BitArray entitySignature, BitArray systemSignature)
+    private void AddEntityToSystem(ComponentSystem system, int entity, BitArray entitySignature, BitArray systemSignature)
     {
         if (!system.Entities.Add(entity))
             return;
@@ -80,7 +81,7 @@ public class SystemManager
         system.WasUpdated = true;
     }
 
-    private void RemoveEntityFromSystem(ComponentSystem system, Entity entity)
+    private void RemoveEntityFromSystem(ComponentSystem system, int entity)
     {
         if (!system.Entities.Remove(entity))
             return;

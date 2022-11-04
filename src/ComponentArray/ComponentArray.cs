@@ -1,26 +1,27 @@
 using System.Diagnostics;
+using EraEntity.Entities;
 
-namespace OrionLibrary;
+namespace EraEntity.ComponentArray;
 
 public class ComponentArray<T> : IComponentArray
 {
     private T[] _componentArray;
     private int _size;
-    private Dictionary<Entity, int> _dataIndexes;
-    private Dictionary<int, Entity> _entityIndexes;
+    private Dictionary<int, int> _dataIndexes;
+    private Dictionary<int, int> _entityIndexes;
 
     public ComponentArray()
     {
         _componentArray = new T[EntityManager.MaxEntities];
-        _dataIndexes = new Dictionary<Entity, int>();
-        _entityIndexes = new Dictionary<int, Entity>();
+        _dataIndexes = new Dictionary<int, int>();
+        _entityIndexes = new Dictionary<int, int>();
     }
 
     // __Definitions__
 
-    public bool IncludesEntity(Entity entity) => _dataIndexes.ContainsKey(entity);
+    public bool IncludesEntity(int entity) => _dataIndexes.ContainsKey(entity);
 
-    public bool DestroyIndexedData(Entity entity)
+    public bool DestroyIndexedData(int entity)
     {
         if (!_dataIndexes.ContainsKey(entity))
             return false;
@@ -29,7 +30,7 @@ public class ComponentArray<T> : IComponentArray
         return true;
     }
 
-    public void InsertData(Entity entity, T component)
+    public void InsertData(int entity, T component)
     {
         Debug.Assert(!_dataIndexes.ContainsKey(entity), "Component added to same entity more than once.");
 
@@ -39,28 +40,28 @@ public class ComponentArray<T> : IComponentArray
         _size++;
     }
 
-    public void RemoveData(Entity entity)
+    public void RemoveData(int entity)
     {
         Debug.Assert(_dataIndexes.ContainsKey(entity), "Removing non-existent component.");
 
-        int last_index = _size - 1;
-        int last_entity = _entityIndexes[last_index];
-        int removed_data_index = _dataIndexes[entity];
+        int lastIndex = _size - 1;
+        int lastEntity = _entityIndexes[lastIndex];
+        int removedDataIndex = _dataIndexes[entity];
 
-        _componentArray[removed_data_index] = _componentArray[last_index];
-        _dataIndexes[last_entity] = removed_data_index;
-        _entityIndexes[removed_data_index] = last_entity;
+        _componentArray[removedDataIndex] = _componentArray[lastIndex];
+        _dataIndexes[lastEntity] = removedDataIndex;
+        _entityIndexes[removedDataIndex] = lastEntity;
 
         _dataIndexes.Remove(entity);
-        _entityIndexes.Remove(last_index);
+        _entityIndexes.Remove(lastIndex);
         _size--;
     }
 
-    public T GetData(Entity entity)
+    public T GetData(int entity)
     {
         Debug.Assert(_dataIndexes.ContainsKey(entity), "Retrieving non-existent component.");
-        int data_index = _dataIndexes[entity];
+        int dataIndex = _dataIndexes[entity];
         
-        return _componentArray[data_index];
+        return _componentArray[dataIndex];
     }
 }
